@@ -1,66 +1,18 @@
-body {
-  font-family: Arial, sans-serif;
-  background-color: #ffffff;
-  color: #b30000;
-  margin: 0;
-  padding: 0;
+:root {
+  --accent: #b30000;
+  --bg: #fff;
+  --card: #fff5f5;
 }
 
-.container {
-  max-width: 800px;
-  margin: auto;
-  padding: 20px;
-  background: #fff5f5;
-  border-radius: 10px;
-  box-shadow: 0px 0px 10px rgba(179, 0, 0, 0.2);
-}
-
-h2, h3 {
-  color: #b30000;
-}
-
-form, table {
-  width: 100%;
-  margin-top: 15px;
-}
-
-input, button {
-  padding: 10px;
-  margin: 5px 0;
-  width: 100%;
-  border: 1px solid #b30000;
-  border-radius: 5px;
-}
-
-button {
-  background-color: #b30000;
-  color: white;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #ff1a1a;
-}
-
-.error {
-  color: red;
-}
-
-table {
-  border-collapse: collapse;
-  width: 100%;
-}
-
-table th, table td {
-  border: 1px solid #b30000;
-  padding: 8px;
-  text-align: left;
-}
-
-tr.active {
-  background: #ffe6e6;
-}
-
-tr.completed {
-  background: #e6ffe6;
-}
+body { font-family: Arial, sans-serif; background: var(--bg); color: var(--accent); margin: 0; padding: 0; }
+.container { max-width: 1100px; margin: 20px auto; padding: 18px; background: var(--card); border-radius: 8px; box-shadow: 0 6px 12px rgba(179,0,0,0.06); }
+h2 { color: var(--accent); }
+input, button { padding: 10px; margin: 6px 0; border-radius: 6px; border: 1px solid var(--accent); }
+button { background: var(--accent); color: #fff; cursor: pointer; }
+button:hover { background: #ff1a1a; }
+.error { color: red; }
+table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+table, th, td { border: 1px solid var(--accent); }
+th { background: var(--accent); color: white; padding: 10px; }
+td { padding: 8px; }
+video { background: #000; }

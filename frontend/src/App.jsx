@@ -5,7 +5,7 @@ import EmployeeHome from "./pages/EmployeeHome";
 import AttendanceHistory from "./pages/AttendanceHistory";
 import AdminDashboard from "./pages/AdminDashboard";
 
-function App() {
+export default function App() {
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
 
@@ -15,8 +15,7 @@ function App() {
       <Route path="/employee" element={token && role === "employee" ? <EmployeeHome /> : <Navigate to="/" />} />
       <Route path="/history" element={token && role === "employee" ? <AttendanceHistory /> : <Navigate to="/" />} />
       <Route path="/admin" element={token && role === "admin" ? <AdminDashboard /> : <Navigate to="/" />} />
+      <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );
 }
-
-export default App;

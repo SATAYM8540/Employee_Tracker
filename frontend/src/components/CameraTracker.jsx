@@ -1,78 +1,105 @@
-// import React, { useEffect, useRef } from "react";
-
-// function CameraTracker() {
-//   const videoRef = useRef(null);
-
-//   useEffect(() => {
-//     navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-//       .then((stream) => {
-//         videoRef.current.srcObject = stream;
-//       })
-//       .catch((err) => console.error("Camera error:", err));
-//   }, []);
-
-//   return (
-//     <div>
-//       <video ref={videoRef} autoPlay playsInline width="400" />
-//     </div>
-//   );
-// }
-
-// export default CameraTracker;
-
-
 
 import React, { useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 
 const socket = io("http://localhost:5000");
 
-function CameraTracker() {
-  const videoRef = useRef(null);
-  const peerConnection = useRef(null);
+export default function CameraTracker() {
+  const localVideoRef = useRef(null);
+  const pcsRef = useRef({});
+  const streamRef = useRef(null);
 
   useEffect(() => {
-    const userId = localStorage.getItem("userId");
-    const role = localStorage.getItem("role");
-    socket.emit("register", { userId, role });
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user) return;
 
-    socket.on("request-stream", async () => {
-      console.log("📹 Admin requested stream");
+    // Register this employee socket
+    socket.emit("register", { userId: user.id });
 
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      videoRef.current.srcObject = stream;
+    // Get camera + mic
+    (async () => {
+      try {
+        const s = await navigator.mediaDevices.getUserMedia({
+          video: { width: 640 },
+          audio: true,
+        });
+        streamRef.current = s;
+        if (localVideoRef.current) localVideoRef.current.srcObject = s;
+      } catch (err) {
+        console.error("❌ getUserMedia failed", err);
+      }
+    })();
 
-      peerConnection.current = new RTCPeerConnection();
-      stream.getTracks().forEach(track => peerConnection.current.addTrack(track, stream));
+    // When admin requests stream
+    socket.on("request-stream", async ({ adminSocketId }) => {
+      try {
+        const pc = new RTCPeerConnection();
+        pcsRef.current[adminSocketId] = pc;
 
-      peerConnection.current.onicecandidate = (e) => {
-        if (e.candidate) {
-          socket.emit("webrtc-ice-candidate", { targetId: "admin", candidate: e.candidate });
-        }
-      };
+        streamRef.current?.getTracks().forEach((track) =>
+          pc.addTrack(track, streamRef.current)
+        );
 
-      const offer = await peerConnection.current.createOffer();
-      await peerConnection.current.setLocalDescription(offer);
+        pc.onicecandidate = (e) => {
+          if (e.candidate) {
+            socket.emit("webrtc-ice", {
+              targetSocketId: adminSocketId,
+              candidate: e.candidate,
+            });
+          }
+        };
 
-      socket.emit("webrtc-offer", { adminId: "admin", offer });
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+
+        socket.emit("webrtc-offer", {
+          adminSocketId,
+          offer,
+        });
+      } catch (err) {
+        console.error("❌ Failed to handle request-stream:", err);
+      }
     });
 
+    // Handle answer from admin
     socket.on("webrtc-answer", async ({ answer }) => {
-      await peerConnection.current.setRemoteDescription(new RTCSessionDescription(answer));
-    });
-
-    socket.on("webrtc-ice-candidate", async ({ candidate }) => {
-      if (candidate) {
-        try {
-          await peerConnection.current.addIceCandidate(new RTCIceCandidate(candidate));
-        } catch (err) {
-          console.error("ICE error:", err);
+      for (const pc of Object.values(pcsRef.current)) {
+        if (!pc._remoteSet) {
+          await pc.setRemoteDescription(new RTCSessionDescription(answer));
+          pc._remoteSet = true;
+          break;
         }
       }
     });
+
+    // Handle ICE candidates
+    socket.on("webrtc-ice", async ({ candidate }) => {
+      for (const pc of Object.values(pcsRef.current)) {
+        try {
+          await pc.addIceCandidate(new RTCIceCandidate(candidate));
+        } catch (e) {}
+      }
+    });
+
+    return () => {
+      if (streamRef.current) streamRef.current.getTracks().forEach((t) => t.stop());
+      for (const pc of Object.values(pcsRef.current)) pc.close?.();
+      socket.off("request-stream");
+      socket.off("webrtc-answer");
+      socket.off("webrtc-ice");
+    };
   }, []);
 
-  return <video ref={videoRef} autoPlay playsInline width="400" />;
+  return (
+    <div>
+      <h4 style={{ color: "#b30000" }}>Your Camera</h4>
+      <video
+        ref={localVideoRef}
+        autoPlay
+        playsInline
+        muted
+        style={{ width: 320, height: 240, background: "#000" }}
+      />
+    </div>
+  );
 }
-
-export default CameraTracker;

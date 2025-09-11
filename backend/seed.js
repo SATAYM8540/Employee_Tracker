@@ -2,51 +2,48 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import bcrypt from "bcryptjs";
 import User from "./models/User.js";
+import Attendance from "./models/Attendance.js";
 
 dotenv.config();
 
 async function seed() {
   try {
-    await mongoose.connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log("✅ MongoDB connected");
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("Mongo connected");
 
-    // Optional: clear old users
-    await User.deleteMany({});
+    const adminEmail = "admin@tracknova.com";
+    const adminPass = "Admin123";
+    let admin = await User.findOne({ email: adminEmail });
+    if (!admin) {
+      admin = await User.create({ name: "Admin", email: adminEmail, password: await bcrypt.hash(adminPass, 10), role: "admin" });
+      console.log("Admin created:", adminEmail, adminPass);
+    }
 
-    // Hash passwords
-    const hashedAdmin = await bcrypt.hash("Admin123", 10);
-    const hashedEmp1 = await bcrypt.hash("Employee123", 10);
-    const hashedEmp2 = await bcrypt.hash("Employee456", 10);
+    const employees = [
+      { name: "Alice", email: "emp1@tracknova.com", password: "Employee123" },
+      { name: "Bob", email: "emp2@tracknova.com", password: "Employee123" },
+      { name: "Charlie", email: "emp3@tracknova.com", password: "Employee123" },
+    ];
 
-    // Insert default users
-    const users = await User.insertMany([
-      {
-        name: "Admin User",
-        email: "admin@tracknova.com",
-        password: hashedAdmin,
-        role: "admin",
-      },
-      {
-        name: "Employee One",
-        email: "emp1@tracknova.com",
-        password: hashedEmp1,
-        role: "employee",
-      },
-      {
-        name: "Employee Two",
-        email: "emp2@tracknova.com",
-        password: hashedEmp2,
-        role: "employee",
-      },
-    ]);
+    for (const e of employees) {
+      let u = await User.findOne({ email: e.email });
+      if (!u) {
+        u = await User.create({ name: e.name, email: e.email, password: await bcrypt.hash(e.password, 10), role: "employee" });
+        console.log("Created", e.email, e.password);
+      }
+      const logs = await Attendance.find({ user: u._id });
+      if (logs.length === 0) {
+        const today = new Date();
+        const yesterday = new Date(today); yesterday.setDate(today.getDate()-1);
+        await Attendance.create({ user: u._id, loginTime: new Date(yesterday.setHours(9,0,0)), logoutTime: new Date(yesterday.setHours(17,30,0)), durationSeconds: 8.5*3600 });
+        await Attendance.create({ user: u._id, loginTime: new Date(today.setHours(9,15,0)), logoutTime: null });
+      }
+    }
 
-    console.log("✅ Default users inserted:", users);
-    process.exit();
-  } catch (error) {
-    console.error("❌ Error seeding database:", error);
+    console.log("Seeding completed");
+    process.exit(0);
+  } catch (err) {
+    console.error(err);
     process.exit(1);
   }
 }

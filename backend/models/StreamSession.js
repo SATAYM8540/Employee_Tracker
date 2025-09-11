@@ -1,10 +1,11 @@
 import mongoose from "mongoose";
 
-const streamSessionSchema = new mongoose.Schema({
+const streamSchema = new mongoose.Schema({
   employee: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  admin: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
   startedAt: { type: Date, default: Date.now },
-  endedAt: { type: Date },
-  status: { type: String, enum: ["active", "stopped"], default: "active" }
+  endedAt: { type: Date, default: null },
+  status: { type: String, enum: ["active","stopped"], default: "active" }
 });
 
-export default mongoose.model("StreamSession", streamSessionSchema);
+export default mongoose.model("StreamSession", streamSchema);
