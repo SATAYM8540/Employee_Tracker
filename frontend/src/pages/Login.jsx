@@ -31,8 +31,8 @@ export default function Login() {
         <button type="submit">Login</button>
         {err && <p style={{color:'red'}}>{err}</p>}
       </form>
-      {/* <div style={{marginTop:8,color:'#b30000'}}>Admin: admin@tracknova.com / Admin123</div> */}
-      {/* <div style={{color:'#b30000'}}>Employee: emp1@tracknova.com / Employee123</div> */}
+       <div style={{marginTop:8,color:'#b30000'}}>Admin: admin@tracknova.com / Admin123</div> 
+       <div style={{color:'#b30000'}}>Employee: emp1@tracknova.com / Employee123</div> 
     </div>
   );
 }
