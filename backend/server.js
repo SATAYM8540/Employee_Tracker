@@ -111,6 +111,9 @@ import User from "./models/User.js";
 import Attendance from "./models/Attendance.js";
 
 dotenv.config();
+const path =  require('path');
+
+
 const app = express();
 const httpServer = createServer(app);
 
@@ -227,6 +230,12 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/stream", streamRoutes);
 
 app.get("/", (req, res) => res.send("TrackNova API"));
+
+
+app.use(express.static(path.join(__dirname,'./frontend/dist')))
+app.get('*', function(req,res){
+  res.sendFile(path.join(__dirname,"./frontend/dist/index.html"));
+})
 
 const PORT = process.env.PORT || 5000;
 mongoose.connect(process.env.MONGO_URI)
