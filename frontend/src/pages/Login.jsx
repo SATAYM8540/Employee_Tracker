@@ -243,7 +243,7 @@ export default function Login() {
     <div className="login-page">
       <div className="login-card">
         {/* Logo */}
-        <img src="/trackNova1.png" alt="TrackNova Logo" className="logo" />
+        {/* <img src="/trackNova1.png" alt="TrackNova Logo" className="logo" /> */}
 
         <h2 className="title">TrackNova Login</h2>
 
@@ -268,13 +268,13 @@ export default function Login() {
               type={showPassword ? "text" : "password"}
               required
             />
-            <button
+            {/* <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="toggle-btn"
             >
               {showPassword ? "Hide" : "Show"}
-            </button>
+            </button> */}
           </div>
 
           <button type="submit" disabled={loading} className="submit-btn">
