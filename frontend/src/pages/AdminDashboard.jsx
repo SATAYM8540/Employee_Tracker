@@ -1,6 +1,4 @@
 
-
-
 import React, { useEffect, useState } from "react";
 import client from "../api/client";
 import VideoTile from "../components/VideoTile";
