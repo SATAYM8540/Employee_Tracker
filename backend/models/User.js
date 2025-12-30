@@ -1,12 +1,25 @@
+
 import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
 
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
+  email: { type: String, unique: true, required: true },
   password: { type: String, required: true },
-  role: { type: String, enum: ["admin","employee"], default: "employee" },
-  status: { type: String, enum: ["online","offline"], default: "offline" },
-  lastLogin: { type: Date, default: null }
-}, { timestamps: true });
+  role: { type: String, enum: ["superuser", "admin", "employee"], required: true },
+  status: { type: String, default: "offline" },
+  latestLogin: { type: Date },
+  latestLogout: { type: Date },
+});
+
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+  this.password = await bcrypt.hash(this.password, 10);
+  next();
+});
+
+userSchema.methods.matchPassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
 
 export default mongoose.model("User", userSchema);

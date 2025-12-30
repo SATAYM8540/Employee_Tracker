@@ -1,7 +1,8 @@
 
+
 import React, { useState } from "react";
 import client from "../api/client";
-import "./Login.css"; // Import CSS file
+import "./Login.css";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -13,6 +14,8 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setErr(""); // clear previous errors
+
     try {
       const res = await client.post("/auth/login", { email, password });
       const { token, user } = res.data;
@@ -25,35 +28,35 @@ export default function Login() {
         JSON.stringify({ id: user.id, name: user.name, role: user.role })
       );
 
-      if (user.role === "admin") window.location.href = "/admin";
+      // Redirect based on role
+      if (user.role === "superuser") window.location.href = "/superuser/dashboard";
+      else if (user.role === "admin") window.location.href = "/admin";
       else window.location.href = "/employee";
     } catch (err) {
-      setErr(err.response?.data?.error || "Login failed");
+      if (err.response) {
+        setErr(err.response.data?.error || "Invalid credentials");
+      } else {
+        setErr("Server unreachable. Please try again later.");
+      }
     }
+
     setLoading(false);
   };
 
   return (
     <div className="login-page">
       <div className="login-card">
-        {/* Logo */}
-        {/* <img src="/trackNova1.png" alt="TrackNova Logo" className="logo" /> */}
-
         <h2 className="title">TrackNova Login</h2>
-
-        {/* Error */}
         {err && <p className="error">{err}</p>}
-
-        {/* Form */}
         <form onSubmit={handleSubmit} className="login-form">
           <input
+            autoFocus
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email"
             type="email"
             required
           />
-
           <div className="password-field">
             <input
               value={password}
@@ -62,25 +65,16 @@ export default function Login() {
               type={showPassword ? "text" : "password"}
               required
             />
-            {/* <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="toggle-btn"
-            >
-              {showPassword ? "Hide" : "Show"}
-            </button> */}
           </div>
-
           <button type="submit" disabled={loading} className="submit-btn">
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
-
-        {/* Demo credentials */}
-        <div className="demo-creds">
+        {/* <div className="demo-creds">
+          <p>Superuser: superuser@tracknova.com / Super123</p>
           <p>Admin: admin@tracknova.com / Admin123</p>
           <p>Employee: emp1@tracknova.com / Employee123</p>
-        </div>
+        </div> */}
       </div>
     </div>
   );

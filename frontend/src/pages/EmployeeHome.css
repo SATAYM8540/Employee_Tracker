@@ -1,0 +1,79 @@
+.employee-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(to bottom right, #ffe5d9, #ffccd5);
+  font-family: Arial, sans-serif;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.employee-card {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.employee-title {
+  color: #b30000;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+}
+
+.employee-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.employee-buttons button {
+  padding: 0.8rem 1.2rem;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: 0.3s;
+}
+
+.btn-history {
+  background: #6a0dad;
+  color: #fff;
+}
+.btn-history:hover {
+  background: #4b0082;
+}
+
+.btn-logout {
+  background: #b30000;
+  color: #fff;
+}
+.btn-logout:hover {
+  background: #800000;
+}
+
+/* FadeIn Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .employee-card {
+    padding: 1.5rem;
+    border-radius: 12px;
+  }
+  .employee-title {
+    font-size: 1.5rem;
+  }
+  .employee-buttons button {
+    font-size: 0.95rem;
+    padding: 0.7rem 1rem;
+  }
+}
