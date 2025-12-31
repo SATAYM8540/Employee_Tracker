@@ -79,4 +79,6 @@ desktop.ini
 # Misc
 # ===========================
 *.local
-.env
+.env/
+node_modules/
+.seed/
