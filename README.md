@@ -84,8 +84,6 @@ Create a .env file inside the backend folder:
 PORT=5000
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
-ADMIN_EMAIL=admin@example.com
-ADMIN_PASSWORD=strongpassword
 
 
 ⚠️ Never commit .env files to GitHub
