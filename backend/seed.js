@@ -71,54 +71,54 @@
 
 
 
-// import mongoose from "mongoose";
-// import dotenv from "dotenv";
-// import bcrypt from "bcryptjs";
-// import User from "./models/User.js";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import bcrypt from "bcryptjs";
+import User from "./models/User.js";
 
-// dotenv.config();
+dotenv.config();
 
-// async function seed() {
-//   try {
-//     await mongoose.connect(process.env.MONGO_URI);
-//     console.log("Mongo connected");
+async function seed() {
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("Mongo connected");
 
-//     // Admin
-//     const adminEmail = process.env.ADMIN_EMAIL;
-//     const adminPass = process.env.ADMIN_PASSWORD;
+    // Admin
+    const adminEmail = process.env.ADMIN_EMAIL;
+    const adminPass = process.env.ADMIN_PASSWORD;
 
-//     let admin = await User.findOne({ email: adminEmail });
-//     if (!admin) {
-//       admin = await User.create({
-//         name: "Admin",
-//         email: adminEmail,
-//         password: await bcrypt.hash(adminPass, 10),
-//         role: "admin",
-//       });
-//       console.log("Admin created");
-//     }
+    let admin = await User.findOne({ email: adminEmail });
+    if (!admin) {
+      admin = await User.create({
+        name: "Admin",
+        email: adminEmail,
+        password: await bcrypt.hash(adminPass, 10),
+        role: "admin",
+      });
+      console.log("Admin created");
+    }
 
-//     // Superuser
-//     const superEmail = process.env.SUPERUSER_EMAIL;
-//     const superPass = process.env.SUPERUSER_PASSWORD;
+    // Superuser
+    const superEmail = process.env.SUPERUSER_EMAIL;
+    const superPass = process.env.SUPERUSER_PASSWORD;
 
-//     let superuser = await User.findOne({ email: superEmail });
-//     if (!superuser) {
-//       superuser = await User.create({
-//         name: "Superuser",
-//         email: superEmail,
-//         password: await bcrypt.hash(superPass, 10),
-//         role: "superuser",
-//       });
-//       console.log("Superuser created");
-//     }
+    let superuser = await User.findOne({ email: superEmail });
+    if (!superuser) {
+      superuser = await User.create({
+        name: "Superuser",
+        email: superEmail,
+        password: await bcrypt.hash(superPass, 10),
+        role: "superuser",
+      });
+      console.log("Superuser created");
+    }
 
-//     console.log("Seeding completed");
-//     process.exit(0);
-//   } catch (err) {
-//     console.error(err);
-//     process.exit(1);
-//   }
-// }
+    console.log("Seeding completed");
+    process.exit(0);
+  } catch (err) {
+    console.error(err);
+    process.exit(1);
+  }
+}
 
-// seed();
+seed();
